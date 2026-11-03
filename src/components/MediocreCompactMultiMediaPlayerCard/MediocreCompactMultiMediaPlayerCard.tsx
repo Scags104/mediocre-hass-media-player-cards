@@ -111,6 +111,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
     alwaysShowPowerButton,
     hide_when_off: hideWhenOff,
     hide_when_group_child: hideWhenGroupChild,
+    show_name_when_idle: showNameWhenIdle,
     use_art_colors,
     tap_opens_popup,
     entity_id,
@@ -130,6 +131,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
       alwaysShowCustomButtons: config.options?.always_show_custom_buttons,
       hide_when_off: config.options?.hide_when_off,
       hide_when_group_child: config.options?.hide_when_group_child,
+      show_name_when_idle: config.options?.show_name_when_idle,
       tap_opens_popup: config.tap_opens_popup,
       use_art_colors: config.use_art_colors,
       entity_id: selectedPlayer.entity_id,
@@ -138,6 +140,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
   }, [config, selectedPlayer]);
 
   const hasCustomButtons = custom_buttons && custom_buttons.length > 0;
+
   const hasSearch =
     getHasSearch(search, ma_entity_id) && !isEmbeddedInMultiCard;
   const hasMediaBrowser =
@@ -156,6 +159,21 @@ export const MediocreCompactMultiMediaPlayerCard = ({
 
   const player = usePlayer();
   const { state, subtitle } = player;
+
+  // When nothing is loaded, show the player's name as the title and its state
+  // (or source) underneath, instead of "Idle" with the name in small print.
+  const idleNameTitle = useMemo(() => {
+    if (!showNameWhenIdle) return undefined;
+    const hasMedia =
+      ["playing", "paused", "buffering"].includes(player.state) ||
+      !!player.attributes?.media_title;
+    if (hasMedia) return undefined;
+    return (
+      selectedPlayer?.name ??
+      player.attributes?.friendly_name ??
+      player.entity_id
+    );
+  }, [showNameWhenIdle, player, selectedPlayer?.name]);
 
   const hasQueue =
     useCanDisplayQueue({ ma_entity_id, lms_entity_id }) &&
@@ -266,8 +284,11 @@ export const MediocreCompactMultiMediaPlayerCard = ({
           <div css={styles.cardColumn}>
             <div css={[styles.cardRow, styles.alignStart]}>
               <div css={styles.grid}>
-                <MetaInfo />
-                <PlayerInfo />
+                <MetaInfo
+                  titleOverride={idleNameTitle}
+                  subtitleOverride={idleNameTitle ? player.title : undefined}
+                />
+                <PlayerInfo hideName={!!idleNameTitle} />
               </div>
               <div css={styles.cardRowRight}>
                 {!isEmbeddedInMultiCard &&

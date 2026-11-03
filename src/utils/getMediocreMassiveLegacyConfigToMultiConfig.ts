@@ -9,7 +9,7 @@ export const getMediocreMassiveLegacyConfigToMediocreMultiConfig = (
   const media_players = [
     {
       action: config.action,
-      name: config.name,
+      name: typeof config.name === "string" ? config.name : null,
       entity_id: config.entity_id,
       ma_entity_id: config.ma_entity_id,
       ma_favorite_button_entity_id: config.ma_favorite_button_entity_id,

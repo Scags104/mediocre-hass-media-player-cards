@@ -5,7 +5,11 @@ import {
 } from "@components/CardContext";
 import { useContext, useMemo } from "preact/hooks";
 import type { MediocreMediaPlayerCardConfig } from "@types";
-import { getMediocreLegacyConfigToMediocreMultiConfig } from "@utils";
+import {
+  getMediocreLegacyConfigToMediocreMultiConfig,
+  getPlayerDisplayName,
+} from "@utils";
+import { useHass } from "@components/HassContext";
 import { MediocreCompactMultiMediaPlayerCard } from "@components/MediocreCompactMultiMediaPlayerCard";
 import { SelectedPlayerProvider } from "@components/SelectedPlayerContext";
 
@@ -21,9 +25,15 @@ export const MediocreMediaPlayerCard = ({
   const { rootElement, config } =
     useContext<CardContextType<MediocreMediaPlayerCardConfig>>(CardContext);
 
+  const hass = useHass();
+  const displayName = getPlayerDisplayName(hass, config.entity_id, config.name);
+
   const multiConfig = useMemo(() => {
-    return getMediocreLegacyConfigToMediocreMultiConfig(config);
-  }, [config]);
+    return getMediocreLegacyConfigToMediocreMultiConfig({
+      ...config,
+      name: displayName ?? null,
+    });
+  }, [config, displayName]);
 
   return (
     <CardContextProvider rootElement={rootElement} config={multiConfig}>

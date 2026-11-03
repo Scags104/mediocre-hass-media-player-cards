@@ -120,6 +120,7 @@ describe("getMediocreLegacyConfigToMediocreMultiConfig", () => {
     const result = getMediocreLegacyConfigToMediocreMultiConfig(config);
     expect(result.media_players.length).toBe(1);
     expect(result.options).toEqual({
+      show_name_when_idle: false,
       show_volume_step_buttons: false,
       use_volume_up_down_for_step_buttons: false,
       use_experimental_lms_media_browser: false,
@@ -179,5 +180,33 @@ describe("getMediocreLegacyConfigToMediocreMultiConfig", () => {
         can_be_grouped: true,
       })
     );
+  });
+
+  it("passes plain string names through and drops unresolved name parts", () => {
+    const base = {
+      type: "custom:mediocre-media-player-card",
+      entity_id: "media_player.living_room",
+    };
+    expect(
+      getMediocreLegacyConfigToMediocreMultiConfig({ ...base, name: "TV" })
+        .media_players[0].name
+    ).toBe("TV");
+    expect(
+      getMediocreLegacyConfigToMediocreMultiConfig({
+        ...base,
+        name: [{ type: "area" }, { type: "device" }],
+      }).media_players[0].name
+    ).toBe(null);
+  });
+
+  it("passes show_name_when_idle through", () => {
+    const result = getMediocreLegacyConfigToMediocreMultiConfig({
+      type: "custom:mediocre-media-player-card",
+      entity_id: "media_player.living_room",
+      options: { show_name_when_idle: true },
+    });
+    expect(
+      (result.options as { show_name_when_idle?: boolean }).show_name_when_idle
+    ).toBe(true);
   });
 });

@@ -23,8 +23,20 @@ const styles = {
   }),
 };
 
-export const MetaInfo = () => {
-  const { title, subtitle } = usePlayer();
+export type MetaInfoProps = {
+  /** Replaces the media title (e.g. the player name when nothing is loaded) */
+  titleOverride?: string;
+  /** Replaces the subtitle; only used together with titleOverride */
+  subtitleOverride?: string;
+};
+
+export const MetaInfo = ({
+  titleOverride,
+  subtitleOverride,
+}: MetaInfoProps) => {
+  const player = usePlayer();
+  const title = titleOverride ?? player.title;
+  const subtitle = titleOverride ? subtitleOverride : player.subtitle;
 
   return (
     <Fragment>

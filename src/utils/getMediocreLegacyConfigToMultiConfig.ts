@@ -9,7 +9,7 @@ export const getMediocreLegacyConfigToMediocreMultiConfig = (
   const media_players = [
     {
       action: config.action,
-      name: config.name,
+      name: typeof config.name === "string" ? config.name : null,
       entity_id: config.entity_id,
       ma_entity_id: config.ma_entity_id,
       ma_favorite_button_entity_id: config.ma_favorite_button_entity_id,
@@ -63,6 +63,7 @@ export const getMediocreLegacyConfigToMediocreMultiConfig = (
         config.options?.always_show_power_button ?? false,
       hide_when_group_child: config.options?.hide_when_group_child ?? false,
       hide_when_off: config.options?.hide_when_off ?? false,
+      show_name_when_idle: config.options?.show_name_when_idle ?? false,
       use_experimental_lms_media_browser:
         config.options?.use_experimental_lms_media_browser ?? false,
     },

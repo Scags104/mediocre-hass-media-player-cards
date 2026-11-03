@@ -19,7 +19,7 @@ const styles = {
   }),
 };
 
-export const PlayerInfo = () => {
+export const PlayerInfo = ({ hideName }: { hideName?: boolean }) => {
   const hass = useHass();
   const { selectedPlayer: { entity_id, speaker_group_entity_id, name } = {} } =
     useSelectedPlayer();
@@ -33,12 +33,16 @@ export const PlayerInfo = () => {
     hass.states[speaker_group_entity_id ?? entity_id]?.attributes
       ?.group_members;
   const mdiIcon = getDeviceIcon({ icon, deviceClass });
+  const isGrouped = !!groupMembers && groupMembers.length > 1;
+  if (hideName && !isGrouped) {
+    return null; // the name is already the title
+  }
 
   return (
     <div css={styles.root}>
       <Icon icon={mdiIcon} size={"xx-small"} />
-      <span css={styles.friendlyName}>{name ?? playerName}</span>
-      {groupMembers && groupMembers.length > 1 && (
+      {!hideName && <span css={styles.friendlyName}>{name ?? playerName}</span>}
+      {isGrouped && (
         <span css={styles.friendlyName}>+{groupMembers.length - 1}</span>
       )}
     </div>

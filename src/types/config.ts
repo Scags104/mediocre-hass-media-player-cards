@@ -14,6 +14,15 @@ const searchMediaTypeSchema = type({
   media_type: "string",
 });
 
+// Mirrors Home Assistant's card naming (2025.11+): compose a name from registry parts,
+// e.g. [{ type: "area" }, { type: "device" }, { type: "entity" }] -> "Living Room Chromecast".
+export const entityNamePart = type({
+  type: "'area' | 'device' | 'entity' | 'floor'",
+});
+export const playerNameConfig = type("string | null").or(
+  entityNamePart.array()
+);
+
 export const mediaPlayerConfigEntity = type({
   entity: "string",
   "name?": "string | null",
@@ -58,7 +67,7 @@ const searchConfig = searchEntry.array().or(searchLegacyEntry).or("undefined");
 
 const commonMediocreMediaPlayerCardConfigSchema = type({
   type: "string",
-  "name?": "string | null",
+  "name?": playerNameConfig, // fixed name, or name parts resolved with hass.formatEntityName
   entity_id: "string",
   "use_art_colors?": "boolean",
   "action?": interactionConfigSchema,
@@ -84,6 +93,7 @@ export const MediocreMediaPlayerCardConfigSchema =
       "always_show_custom_buttons?": "boolean | null", // Always show custom buttons panel expanded
       "hide_when_off?": "boolean | null", // Hide the card when the media player is off
       "hide_when_group_child?": "boolean | null", // Hide the card when the media player is a group child
+      "show_name_when_idle?": "boolean | null", // Show the player name as the title (and the state below it) when nothing is loaded
     }),
   });
 
@@ -145,6 +155,7 @@ export const MediocreMultiMediaPlayerCardConfigSchema =
           "always_show_custom_buttons?": "boolean | null", // Always show custom buttons panel expanded
           "hide_when_off?": "boolean | null", // Hide the card when the media player is off
           "hide_when_group_child?": "boolean | null", // Hide the card when the media player is a group child
+          "show_name_when_idle?": "boolean | null", // Show the player name as the title (and the state below it) when nothing is loaded
         }),
       })
     )
@@ -161,6 +172,8 @@ export type MediocreMultiMediaPlayerCardConfig =
   typeof MediocreMultiMediaPlayerCardConfigSchema.infer;
 export type MediocreMultiMediaPlayer = typeof MediocreMultiMediaPlayer.infer;
 export type MediaPlayerConfigEntity = typeof mediaPlayerConfigEntity.infer;
+export type EntityNamePart = typeof entityNamePart.infer;
+export type PlayerNameConfig = typeof playerNameConfig.infer;
 export type MediaBrowserConfig = typeof mediaBrowser.infer;
 export type MediaBrowserEntry = typeof mediaBrowserEntry.infer;
 export type MediaBrowserLegacyEntry = typeof mediaBrowserLegacyEntry.infer;
