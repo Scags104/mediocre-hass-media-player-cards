@@ -22,6 +22,8 @@ export type AdditionalActionsMenuProps = {
   ma_favorite_button_entity_id?: string;
   lms_entity_id?: string;
   noSourceSelection?: boolean;
+  /** Items shown at the top of the menu, e.g. custom buttons */
+  extraItems?: OverlayMenuItem[];
 } & Omit<OverlayMenuProps, "menuItems" | "children">;
 
 export const AdditionalActionsMenu = ({
@@ -29,6 +31,7 @@ export const AdditionalActionsMenu = ({
   ma_favorite_button_entity_id,
   lms_entity_id,
   noSourceSelection,
+  extraItems,
   ...overlayMenuProps
 }: AdditionalActionsMenuProps) => {
   const { t } = useIntl();
@@ -59,7 +62,7 @@ export const AdditionalActionsMenu = ({
   );
 
   const menuItems: OverlayMenuItem[] = useMemo(() => {
-    const items: OverlayMenuItem[] = [];
+    const items: OverlayMenuItem[] = [...(extraItems ?? [])];
     if (ma_entity_id && isMainEntityMassPlayer) {
       const massPlayers = getAllMassPlayers().filter(
         player =>
@@ -134,6 +137,7 @@ export const AdditionalActionsMenu = ({
     }
     return items;
   }, [
+    extraItems,
     ma_favorite_button_entity_id,
     isMainEntityMassPlayer,
     isMainEntityLmsPlayer,

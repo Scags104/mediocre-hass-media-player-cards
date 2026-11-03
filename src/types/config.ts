@@ -107,6 +107,7 @@ export const MediocreMediaPlayerCardConfigSchema =
       "hide_when_off?": "boolean | null", // Hide the card when the media player is off
       "hide_when_group_child?": "boolean | null", // Hide the card when the media player is a group child
       "show_name_when_idle?": "boolean | null", // Show the player name as the title (and the state below it) when nothing is loaded
+      "custom_buttons_in_menu?": "boolean | null", // Show custom buttons as items in the ⋮ menu instead of a separate button
     }),
   });
 
@@ -170,6 +171,7 @@ export const MediocreMultiMediaPlayerCardConfigSchema =
           "hide_when_off?": "boolean | null", // Hide the card when the media player is off
           "hide_when_group_child?": "boolean | null", // Hide the card when the media player is a group child
           "show_name_when_idle?": "boolean | null", // Show the player name as the title (and the state below it) when nothing is loaded
+          "custom_buttons_in_menu?": "boolean | null", // Show custom buttons as items in the ⋮ menu instead of a separate button
         }),
       })
     )

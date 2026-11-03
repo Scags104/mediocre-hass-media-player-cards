@@ -121,6 +121,7 @@ describe("getMediocreLegacyConfigToMediocreMultiConfig", () => {
     expect(result.media_players.length).toBe(1);
     expect(result.options).toEqual({
       show_name_when_idle: false,
+      custom_buttons_in_menu: false,
       show_volume_step_buttons: false,
       use_volume_up_down_for_step_buttons: false,
       use_experimental_lms_media_browser: false,
@@ -207,6 +208,18 @@ describe("getMediocreLegacyConfigToMediocreMultiConfig", () => {
     });
     expect(
       (result.options as { show_name_when_idle?: boolean }).show_name_when_idle
+    ).toBe(true);
+  });
+
+  it("passes custom_buttons_in_menu through", () => {
+    const result = getMediocreLegacyConfigToMediocreMultiConfig({
+      type: "custom:mediocre-media-player-card",
+      entity_id: "media_player.living_room",
+      options: { custom_buttons_in_menu: true },
+    });
+    expect(
+      (result.options as { custom_buttons_in_menu?: boolean })
+        .custom_buttons_in_menu
     ).toBe(true);
   });
 });

@@ -34,6 +34,8 @@ import { MediaBrowserBar } from "./components/MediaBrowserBar";
 import { theme } from "@constants";
 import { useSelectedPlayer } from "@components/SelectedPlayerContext";
 import { TtsBar } from "@components/TtsBar";
+import type { OverlayMenuItem } from "@components/OverlayMenu/OverlayMenu";
+import { handleAction } from "@utils/actions";
 import { isTtsConfigured } from "@utils/getTtsServiceCall";
 
 const styles = {
@@ -58,7 +60,9 @@ const styles = {
   }),
   cardRowRight: css({
     display: "grid",
-    gridTemplateColumns: "repeat(4, auto)",
+    gridAutoFlow: "column", // one row, however many buttons are shown
+    gridAutoColumns: "auto",
+    alignItems: "center",
     gap: "4px",
     minWidth: "max-content",
   }),
@@ -115,6 +119,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
     hide_when_off: hideWhenOff,
     hide_when_group_child: hideWhenGroupChild,
     show_name_when_idle: showNameWhenIdle,
+    custom_buttons_in_menu: customButtonsInMenu,
     use_art_colors,
     tap_opens_popup,
     entity_id,
@@ -136,6 +141,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
       hide_when_off: config.options?.hide_when_off,
       hide_when_group_child: config.options?.hide_when_group_child,
       show_name_when_idle: config.options?.show_name_when_idle,
+      custom_buttons_in_menu: config.options?.custom_buttons_in_menu,
       tap_opens_popup: config.tap_opens_popup,
       use_art_colors: config.use_art_colors,
       entity_id: selectedPlayer.entity_id,
@@ -236,6 +242,26 @@ export const MediocreCompactMultiMediaPlayerCard = ({
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [showTts, setShowTts] = useState(false);
+
+  // Optionally fold custom buttons into the ⋮ menu so there is one overflow menu, not two.
+  const mergeCustomButtons =
+    !!customButtonsInMenu && !!hasCustomButtons && !alwaysShowCustomButtons;
+  const customButtonMenuItems: OverlayMenuItem[] | undefined = useMemo(() => {
+    if (!mergeCustomButtons || !custom_buttons) return undefined;
+    return custom_buttons.map(({ icon, name, ...actionConfig }) => ({
+      label: name,
+      icon,
+      onClick: () => {
+        if (!rootElement) return;
+        handleAction(
+          rootElement,
+          { ...actionConfig, entity: entity_id },
+          "tap",
+          getHass()
+        );
+      },
+    }));
+  }, [mergeCustomButtons, custom_buttons, rootElement, entity_id]);
   const hasTts = !isEmbeddedInMultiCard && isTtsConfigured(tts);
 
   const artSize = !subtitle ? 78 : 100;
@@ -310,40 +336,27 @@ export const MediocreCompactMultiMediaPlayerCard = ({
                       onClick={switchPlayer}
                     />
                   )}
-                {hasCustomButtons && !alwaysShowCustomButtons && (
-                  <Fragment>
-                    {custom_buttons.length === 1 ? (
-                      <CustomButton
-                        button={custom_buttons[0]}
-                        type="icon-button"
-                      />
-                    ) : (
-                      <IconButton
-                        id="mmpc-compact-custom-buttons-toggle"
-                        size="x-small"
-                        onClick={() => setShowCustomButtons(!showCustomButtons)}
-                        icon={"mdi:dots-horizontal"}
-                      />
-                    )}
-                  </Fragment>
-                )}
-                {!isEmbeddedInMultiCard && (
-                  <AdditionalActionsMenu
-                    ma_entity_id={ma_entity_id ?? undefined}
-                    ma_favorite_button_entity_id={
-                      ma_favorite_button_entity_id ?? undefined
-                    }
-                    lms_entity_id={lms_entity_id ?? undefined}
-                    renderTrigger={triggerProps => (
-                      <IconButton
-                        id="mmpc-compact-additional-actions-trigger"
-                        icon={"mdi:dots-vertical"}
-                        size="x-small"
-                        {...triggerProps}
-                      />
-                    )}
-                  />
-                )}
+                {hasCustomButtons &&
+                  !alwaysShowCustomButtons &&
+                  !mergeCustomButtons && (
+                    <Fragment>
+                      {custom_buttons.length === 1 ? (
+                        <CustomButton
+                          button={custom_buttons[0]}
+                          type="icon-button"
+                        />
+                      ) : (
+                        <IconButton
+                          id="mmpc-compact-custom-buttons-toggle"
+                          size="x-small"
+                          onClick={() =>
+                            setShowCustomButtons(!showCustomButtons)
+                          }
+                          icon={"mdi:dots-horizontal"}
+                        />
+                      )}
+                    </Fragment>
+                  )}
                 {hasMediaBrowser && (
                   <IconButton
                     id="mmpc-compact-media-browser-toggle"
@@ -360,6 +373,14 @@ export const MediocreCompactMultiMediaPlayerCard = ({
                     icon={"mdi:magnify"}
                   />
                 )}
+                {hasQueue && (
+                  <IconButton
+                    id="mmpc-compact-queue-toggle"
+                    size="x-small"
+                    onClick={() => setShowQueue(!showQueue)}
+                    icon={"mdi:playlist-music"}
+                  />
+                )}
                 {hasTts && (
                   <IconButton
                     id="mmpc-compact-tts-toggle"
@@ -370,12 +391,22 @@ export const MediocreCompactMultiMediaPlayerCard = ({
                     icon={"mdi:account-voice"}
                   />
                 )}
-                {hasQueue && (
-                  <IconButton
-                    id="mmpc-compact-queue-toggle"
-                    size="x-small"
-                    onClick={() => setShowQueue(!showQueue)}
-                    icon={"mdi:playlist-music"}
+                {!isEmbeddedInMultiCard && (
+                  <AdditionalActionsMenu
+                    ma_entity_id={ma_entity_id ?? undefined}
+                    ma_favorite_button_entity_id={
+                      ma_favorite_button_entity_id ?? undefined
+                    }
+                    lms_entity_id={lms_entity_id ?? undefined}
+                    extraItems={customButtonMenuItems}
+                    renderTrigger={triggerProps => (
+                      <IconButton
+                        id="mmpc-compact-additional-actions-trigger"
+                        icon={"mdi:dots-vertical"}
+                        size="x-small"
+                        {...triggerProps}
+                      />
+                    )}
                   />
                 )}
               </div>

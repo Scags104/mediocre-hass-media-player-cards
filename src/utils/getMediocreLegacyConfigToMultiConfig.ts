@@ -65,6 +65,7 @@ export const getMediocreLegacyConfigToMediocreMultiConfig = (
       hide_when_group_child: config.options?.hide_when_group_child ?? false,
       hide_when_off: config.options?.hide_when_off ?? false,
       show_name_when_idle: config.options?.show_name_when_idle ?? false,
+      custom_buttons_in_menu: config.options?.custom_buttons_in_menu ?? false,
       use_experimental_lms_media_browser:
         config.options?.use_experimental_lms_media_browser ?? false,
     },
