@@ -50,6 +50,18 @@ const customButton = type({
 
 const customButtons = customButton.array();
 
+// Text-to-speech panel (like mini-media-player's tts option). Either speak through a TTS engine
+// (tts.speak) to the player, or announce through an Assist satellite (assist_satellite.announce).
+export const ttsConfig = type({
+  "entity_id?": "string | null", // TTS engine entity (tts.*) used with tts.speak
+  "media_player_entity_id?": "string | null", // Player to speak on (defaults to the card's player)
+  "satellite_entity_id?": "string | null", // Assist satellite (assist_satellite.*); uses assist_satellite.announce instead
+  "language?": "string | null",
+  "options?": "object | null", // Engine-specific options, e.g. { voice: "..." }
+  "cache?": "boolean | null",
+  "placeholder?": "string | null",
+});
+
 const searchLegacyEntry = type({
   "enabled?": "boolean | null", // Enables regular Home Assistant search_media functionality
   "show_favorites?": type("boolean | null").or("undefined"), // Shows favorites no search query has been entered
@@ -76,6 +88,7 @@ const commonMediocreMediaPlayerCardConfigSchema = type({
     entities: mediaPlayerConfigEntityArray, // entity_ids of the speakers that can be grouped with the main speaker
   },
   "custom_buttons?": customButtons,
+  "tts?": ttsConfig.or("null"),
   "ma_entity_id?": type("string").or("null").or("undefined"), // MusicAssistant entity_id (adds MA specific features (currently search))
   "ma_favorite_button_entity_id?": type("string").or("null").or("undefined"), // MusicAssistant button entity to mark current song as favorite
   "lms_entity_id?": type("string").or("null").or("undefined"), // LMS entity_id (adds LMS specific features)
@@ -105,6 +118,7 @@ export const MediocreMassiveMediaPlayerCardConfigSchema =
 export const MediocreMultiMediaPlayer = type({
   entity_id: "string",
   "custom_buttons?": customButtons,
+  "tts?": ttsConfig.or("null"),
   "name?": "string | null",
   "speaker_group_entity_id?": type("string").or("null").or("undefined"), // entity_id of the main speaker incase it's different from the entity_id of the media player
   "can_be_grouped?": "boolean | null",
@@ -179,6 +193,7 @@ export type MediaBrowserEntry = typeof mediaBrowserEntry.infer;
 export type MediaBrowserLegacyEntry = typeof mediaBrowserLegacyEntry.infer;
 export type CustomButton = typeof customButton.infer;
 export type CustomButtons = typeof customButtons.infer;
+export type TtsConfig = typeof ttsConfig.infer;
 export type SearchConfig = typeof searchConfig.infer;
 export type SearchLegacyEntry = typeof searchLegacyEntry.infer;
 export type SearchEntry = typeof searchEntry.infer;

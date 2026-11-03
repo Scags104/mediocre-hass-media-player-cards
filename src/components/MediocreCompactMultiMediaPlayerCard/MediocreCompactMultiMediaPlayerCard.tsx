@@ -33,6 +33,8 @@ import { css } from "@emotion/react";
 import { MediaBrowserBar } from "./components/MediaBrowserBar";
 import { theme } from "@constants";
 import { useSelectedPlayer } from "@components/SelectedPlayerContext";
+import { TtsBar } from "@components/TtsBar";
+import { isTtsConfigured } from "@utils/getTtsServiceCall";
 
 const styles = {
   card: css({
@@ -107,6 +109,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
     search,
     media_browser,
     custom_buttons,
+    tts,
     alwaysShowCustomButtons,
     alwaysShowPowerButton,
     hide_when_off: hideWhenOff,
@@ -127,6 +130,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
       search: selectedPlayer.search,
       media_browser: selectedPlayer.media_browser,
       custom_buttons: selectedPlayer.custom_buttons,
+      tts: selectedPlayer.tts,
       alwaysShowPowerButton: config.options?.always_show_power_button,
       alwaysShowCustomButtons: config.options?.always_show_custom_buttons,
       hide_when_off: config.options?.hide_when_off,
@@ -231,6 +235,8 @@ export const MediocreCompactMultiMediaPlayerCard = ({
   };
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [showTts, setShowTts] = useState(false);
+  const hasTts = !isEmbeddedInMultiCard && isTtsConfigured(tts);
 
   const artSize = !subtitle ? 78 : 100;
 
@@ -354,6 +360,16 @@ export const MediocreCompactMultiMediaPlayerCard = ({
                     icon={"mdi:magnify"}
                   />
                 )}
+                {hasTts && (
+                  <IconButton
+                    id="mmpc-compact-tts-toggle"
+                    size="x-small"
+                    title="Text to speech"
+                    aria-label="Text to speech"
+                    onClick={() => setShowTts(!showTts)}
+                    icon={"mdi:account-voice"}
+                  />
+                )}
                 {hasQueue && (
                   <IconButton
                     id="mmpc-compact-queue-toggle"
@@ -411,6 +427,7 @@ export const MediocreCompactMultiMediaPlayerCard = ({
         {showSearch && <Search />}
         {showMediaBrowser && <MediaBrowserBar />}
         {showQueue && <QueueView />}
+        {showTts && hasTts && tts && <TtsBar tts={tts} entityId={entity_id} />}
         {isPopupVisible && (
           <MassivePopUp
             visible={isPopupVisible}

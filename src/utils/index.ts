@@ -31,3 +31,4 @@ export * from "./supportedFeaturesUtils";
 export * from "./transferLmsQueue";
 export * from "./transferMaQueue";
 export * from "./getPlayerDisplayName";
+export * from "./getTtsServiceCall";

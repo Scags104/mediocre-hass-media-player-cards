@@ -18,6 +18,7 @@ export const getMediocreMassiveLegacyConfigToMediocreMultiConfig = (
       search: config.search,
       media_browser: config.media_browser,
       custom_buttons: config.custom_buttons,
+      tts: config.tts,
       can_be_grouped: true,
     },
     ...((

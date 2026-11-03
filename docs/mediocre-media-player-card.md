@@ -42,6 +42,16 @@ options:
   show_name_when_idle: true
 ```
 
+Add a text-to-speech box (like mini-media-player's `tts` option):
+
+```yaml
+type: "custom:mediocre-media-player-card"
+entity_id: media_player.office_speaker
+tts:
+  entity_id: tts.piper
+  language: en-US
+```
+
 ## Options
 
 | Option                                        | Type           | Default  | Description                                                                                                                                                                                                                                            |
@@ -66,6 +76,11 @@ options:
 | `options.hide_when_off`                       | boolean        |          | Hide the card when the media player is off                                                                                                                                                                                                             |
 | `options.hide_when_group_child`               | boolean        |          | Hide the card when the media player is a group child                                                                                                                                                                                                   |
 | `options.show_name_when_idle`                 | boolean        |          | When nothing is loaded, show the player name as the title and its state or source below it, instead of the state as the title                                                                                                                          |
+| `tts.entity_id`                               | string         |          | TTS engine (`tts.*`). Adds a button that opens a text box; sending speaks the text with `tts.speak`                                                                                                                                                    |
+| `tts.media_player_entity_id`                  | string         |          | Player to speak on (defaults to the card's `entity_id`)                                                                                                                                                                                                |
+| `tts.satellite_entity_id`                     | string         |          | Assist satellite (`assist_satellite.*`). Uses `assist_satellite.announce` instead of `tts.speak`                                                                                                                                                       |
+| `tts.language` / `tts.options` / `tts.cache`  |                |          | Passed to `tts.speak` (e.g. `options: { voice: ... }`)                                                                                                                                                                                                 |
+| `tts.placeholder`                             | string         |          | Placeholder text for the text box (default "Text to speak...")                                                                                                                                                                                         |
 | `options.show_volume_step_buttons`            | boolean        |          | Show volume `+`/`-` step buttons on volume sliders                                                                                                                                                                                                     |
 | `options.use_volume_up_down_for_step_buttons` | boolean        |          | Use `volume_up`/`volume_down` services for step buttons instead of `set_volume`                                                                                                                                                                        |
 | `options.use_experimental_lms_media_browser`  | boolean        |          | Replace the built-in media browser with an experimental lyrion_cli-based browser that includes global search and app access (e.g. Spotty, Qobuz). Requires `lms_entity_id` and lyrion_cli.                                                             |
